@@ -2,14 +2,13 @@
 
 namespace Bakgul\LaravelQueryHelper\Tests;
 
-use Bakgul\LaravelQueryHelper\Tests\TestConcerns\HasDebugger;
+use Bakgul\LaravelDumpServer\Concerns\HasDumper;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Tests\CreatesApplication;
 use Tests\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, HasDebugger, LazilyRefreshDatabase;
+    use HasDumper, LazilyRefreshDatabase;
 
     public function setUp(): void
     {
@@ -17,7 +16,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->seed();
 
-        $this->clearDebugger();
+        $this->resetDumper();
     }
 
     public function tearDown(): void
