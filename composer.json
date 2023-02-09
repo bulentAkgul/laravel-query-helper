@@ -1,0 +1,28 @@
+{
+  "name": "bakgul/laravel-query-helper",
+  "description": "A package to add some wrapper around filtering, groupping, sorting and maybe more to write queries faster.",
+  "authors": [
+    {
+      "name": "Bulent Akgul",
+      "email": "bulent.akgul@me.com"
+    }
+  ],
+  "require": {},
+  "require-dev": {},
+  "autoload": {
+    "psr-4": {
+      "Bakgul\\LaravelQueryHelper\\": "src/",
+      "Bakgul\\LaravelQueryHelper\\Tests\\": "tests/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {}
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Bakgul\\LaravelQueryHelper\\QueryServiceProvider"
+      ]
+    }
+  }
+}
