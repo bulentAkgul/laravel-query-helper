@@ -1,6 +1,6 @@
 <?php
 
-namespace Bakgul\LaravelQueryHelper\Tests\QueryTests\ActionTests;
+namespace Bakgul\LaravelQueryHelper\Tests\PackageTests\ActionTests;
 
 use App\Models\Ability;
 use App\Models\User;
@@ -12,11 +12,10 @@ class GetGroupKeysActionTest extends TestCase
     /** @test */
     public function it_will_return_the_group_keys_if_necessary(): void
     {
-        dump(6);
         $this->assertEquals(['name'], GetGroupKeys::_(['group_keys' => ['name']]));
 
         $this->assertEquals([], GetGroupKeys::_(['group' => true], Ability::class));
 
-        $this->assertEquals(['email'], GetGroupKeys::_(['group' => true], User::class));
+        $this->assertEquals(['email_provider'], GetGroupKeys::_(['group' => true], User::class));
     }
 }

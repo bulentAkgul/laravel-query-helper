@@ -1,6 +1,6 @@
 <?php
 
-namespace Bakgul\LaravelQueryHelper\Tests\QueryTests\ActionTests;
+namespace Bakgul\LaravelQueryHelper\Tests\PackageTests\ActionTests;
 
 use Bakgul\LaravelQueryHelper\Actions\SetRawDateExpression;
 use Bakgul\LaravelQueryHelper\Tests\TestCase;

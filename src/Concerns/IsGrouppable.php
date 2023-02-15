@@ -16,13 +16,20 @@ trait IsGrouppable
         array $select = ['*'],
         string $column = 'created_at'
     ): Collection {
-        $keys = $keys ?: self::$groupKeys;
+        $keys = $keys ?: (self::$groupKeys ?? $keys);
 
-        return ($isLast ? $query->latest() : $query)->modify($keys, $select, $column)->get()->group($keys, $take);
+        return ($isLast ? $query->latest() : $query)
+            ->modify($keys, $select, $column)
+            ->get()
+            ->group($keys, $take);
     }
 
-    public static function scopeModify(Builder $query, array $keys = [], array $select = ['*'], string $column = 'created_at'): Builder
-    {
+    public static function scopeModify(
+        Builder $query,
+        array $keys = [],
+        array $select = ['*'],
+        string $column = 'created_at'
+    ): Builder {
         return ModificationQuery::_($query, $keys, $select, $column);
     }
 }

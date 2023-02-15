@@ -12,6 +12,7 @@ class GetPackageThatHasModel
 {
     public static function _(string $file): array
     {
+        dump(self::containers());
         foreach (self::containers() as $container) {
             $files = self::files("{$container}/Models", $file);
 
@@ -19,7 +20,7 @@ class GetPackageThatHasModel
 
             return [
                 Str::dropTail($container),
-                Arr::first($files)
+                str_replace('.php', '', Arr::first($files))
             ];
         }
 

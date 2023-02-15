@@ -2,7 +2,7 @@
 
 namespace Bakgul\LaravelQueryHelper\Filters;
 
-use App\Helpers\Str;
+use Bakgul\LaravelHelpers\Helpers\Str;
 use Bakgul\LaravelQueryHelper\Contracts\Filter;
 use Bakgul\LaravelQueryHelper\Tasks\GetPackageThatHasModel;
 use Bakgul\LaravelQueryHelper\Tasks\SetNamespace;

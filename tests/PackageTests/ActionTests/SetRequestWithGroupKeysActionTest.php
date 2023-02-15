@@ -1,6 +1,6 @@
 <?php
 
-namespace Bakgul\LaravelQueryHelper\Tests\QueryTests\ActionTests;
+namespace Bakgul\LaravelQueryHelper\Tests\PackageTests\ActionTests;
 
 use App\Models\User;
 use Bakgul\LaravelQueryHelper\Actions\SetRequestWithGroupKeys;
@@ -19,7 +19,7 @@ class SetRequestWithGroupKeysActionTest extends TestCase
         $this->changeRequest(['group' => true]);
 
         $this->assertEquals(
-            ['group_keys' =>  ['email'], 'group' => true],
+            ['group_keys' =>  ['email_provider'], 'group' => true],
             SetRequestWithGroupKeys::_(User::class)
         );
     }

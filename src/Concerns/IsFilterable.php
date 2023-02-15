@@ -13,10 +13,10 @@ trait IsFilterable
     {
         $query->filters = $filters;
 
-        return FilterQuery::_($query, self::filters());
+        return FilterQuery::_($query, self::collectFilters());
     }
 
-    public static function filters(?array $map = null): Repository|array
+    public static function collectFilters(?array $map = null): Repository|array
     {
         $cacheKey = 'filters_' . get_class();
 

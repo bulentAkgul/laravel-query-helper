@@ -3,13 +3,13 @@
 namespace Bakgul\LaravelQueryHelper\Queries;
 
 use Bakgul\LaravelHelpers\Helpers\Arr;
-use App\Helpers\Str;
+use Bakgul\LaravelHelpers\Helpers\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
 
 class FilterQuery
 {
-    public static function _(Builder $query, array $pipeline): Builder
+    public static function _(Builder $query, $pipeline): Builder
     {
         foreach ($pipeline as $key => $filterClasses) {
             $query = match ($key) {
@@ -58,7 +58,7 @@ class FilterQuery
 
     private static function setFilterableModels(array $filters): array
     {
-        return array_map(fn ($x) => Str::studly($x), array_keys(Arr::drop($filters, 'with')));
+        return array_map(fn ($x) => Str::studly($x), array_keys(Arr::delete($filters, 'with')));
     }
 
     private static function filter(Builder $query, array $pipeline): Builder

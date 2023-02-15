@@ -2,7 +2,6 @@
 
 namespace Bakgul\LaravelQueryHelper\Contracts;
 
-use App\Helpers\Config;
 use Bakgul\LaravelQueryHelper\Actions\SetRawDateExpression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Expression;
@@ -13,7 +12,7 @@ abstract class Modify
 
     public function __construct()
     {
-        $this->formatters = Config::book('query.formatters');
+        $this->formatters = config('query-helper.formatters');
     }
 
     protected function raw(string $key, string $column = 'created_at'): Expression

@@ -19,6 +19,6 @@ class QueryServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/query.php', 'query_helper');
+        $this->mergeConfigFrom(__DIR__ . '/../config/query.php', 'query-helper');
     }
 }

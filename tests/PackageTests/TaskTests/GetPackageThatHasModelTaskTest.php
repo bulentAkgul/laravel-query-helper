@@ -1,6 +1,6 @@
 <?php
 
-namespace Bakgul\LaravelQueryHelper\Tests\QueryTests\TaskTests;
+namespace Bakgul\LaravelQueryHelper\Tests\PackageTests\TaskTests;
 
 use Bakgul\LaravelHelpers\Helpers\Folder;
 use Bakgul\LaravelQueryHelper\Tasks\GetPackageThatHasModel;
@@ -19,11 +19,11 @@ class GetPackageThatHasModelTaskTest extends TestCase
         Folder::add("{$root}/{$package}/src/Models", "{$model}.php");
 
         $this->assertEquals(
-            ["{$root}/{$package}", "{$model}.php"],
+            ["{$root}/{$package}", $model],
             GetPackageThatHasModel::_($model)
         );
 
-        File::deleteDirectory(base_path('packages/core'));
+        File::deleteDirectory(base_path('packages'));
     }
 
     /** @test */
@@ -35,7 +35,7 @@ class GetPackageThatHasModelTaskTest extends TestCase
         Folder::add("{$root}/app/Models", "{$model}.php");
 
         $this->assertEquals(
-            ["{$root}", "{$model}.php"],
+            [$root, $model],
             GetPackageThatHasModel::_($model)
         );
 

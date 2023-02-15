@@ -2,7 +2,6 @@
 
 namespace Bakgul\LaravelQueryHelper\Queries;
 
-use App\Helpers\Config;
 use Illuminate\Database\Eloquent\Builder;
 
 class ModificationQuery
@@ -11,7 +10,7 @@ class ModificationQuery
     {
         $query = $query->select($select);
 
-        foreach (Config::book('query.modifiers') as $modifier) {
+        foreach (config('query-helper.modifiers') as $modifier) {
             $query = (new $modifier)->modifyQuery($query, $keys, $column);
         }
 

@@ -2,6 +2,7 @@
 
 namespace Bakgul\LaravelQueryHelper\Mixins;
 
+use Bakgul\LaravelQueryHelper\Actions\SetGroupKeys;
 use Bakgul\LaravelQueryHelper\Queries\GroupQuery;
 
 class CollectionMixin
