@@ -37,7 +37,6 @@ class User extends ...
         ],
         'with' => [
             'roles' => Role::class,
-            'posts' => Post::class,
         ]
     ];
 
@@ -54,7 +53,9 @@ class Role extends Model
     use IsFilterable;
 
     private static array $filters = [
-        'self' => [],
+        'self' => [
+            \Bakgul\LaravelQueryHelper\Filters\Name::class,
+        ],
         'with' => [
             'users' => User::class,
             'abilities' => Ability::class,
@@ -98,10 +99,11 @@ class Ability extends Model
 $users = User::filter($request->filters)->get();
 ```
 
-When you call `filter` method, it will generate a filtering array throughout the `filters` array on odels starting from `User` model recursively.
+When you call `filter` method, it will generate a filtering array throughout the `filters` array on models starting from `User` recursively.
 
 To prevent infinite loop in recursion, we stop each branch when they go back to main class after adding main class to the tree. That means You can filter by the following logic:
 - Users that have cetain roles that belongs to some users.
+- 
 This example might not be seen very usefull, but it explains the capability.
 
 Since it's an expensive operation to construct the filtering array, we will cache it when it's created first time.
@@ -136,7 +138,7 @@ The example up above will filter the users based on the following list:
 - the name of one of its roles starts with 'editor'
 - the role can delete something.
 
-#### Polymorphic Relationship Filter
+#### *Polymorphic Relationship Filter*
 
 Unlike other relationships, polymoprphic ones should be listed under the `self` key of `$filters` array.
 
@@ -191,7 +193,7 @@ The filter in request should be like this:
 Groupping operates on PHP level. If you want to group your data in the database level, you can't use this part. Otherwise, this is how to use it:
 
 - Add `IsGrouppable` trait to the model that you want to group.
-- If you want to group based on some columns all the time, add `protected static $groupKeys = ['name', 'year']` property to the model.
+- If you want to group a model with some columns all the time, add `protected static $groupKeys = ['name', 'year']` property to the model.
 - Then use it like so:
 
 ```php
@@ -207,13 +209,13 @@ Groupping operates on PHP level. If you want to group your data in the database 
 $users = User::group(['first_name']);
 ```
 
-`group` method is can be found in `IsGrouppable` trait as `scopeGroup` and it accepts the following arguments:
-- keys: the list of group keys
-- take: the number of items that will be in each group. Default is zero and means 'all'
-- isLast: make it true when you want to get latest records. Default is false.
-- select: the array of columns that will be selected. Default is ['*']
+`group` method can be found in `IsGrouppable` trait as `scopeGroup` and it accepts the following arguments:
+- **keys**: the list of group keys
+- **take**: the number of items that will be in each group. Default is zero and means 'all'
+- **isLast**: make it true when you want to get latest records. Default is false.
+- **select**: the array of columns that will be selected. Default is ['*']
  means 'all'
-- column: the name of the column when you needed. I use it for time modifiers and its default value is 'created_at' 
+- **column**: the name of the column when you needed. I use it for the time modifiers such as year and month. Its default value is 'created_at' 
 
 But what if you want to group users with a column that doesn't exist. You can do that thanks to modifiers that are shipped in the package and can be be found on `src/Modifiers`.
 
@@ -233,7 +235,7 @@ The method up above will add `year` and `email_provider` fields to the each user
 
 ### Modifiying
 
-This is used by groupping functionality, and it's already explained, but just as a remainder, you can use this out of grouping too.
+This is used by groupping functionality, and it's already explained, but just as a remainder, you can use it out of grouping too.
 
 - Add `IsModifyable` trait to model.
 - call `modify` method as a part of query builder.
@@ -254,7 +256,7 @@ It's a quite simple method that allowes you to pass all sorting columns in one m
 User::sort(['name'], ['email', 'desc']);
 ```
 
-## Extend Functinalities
+## Extending Functionalities
 
 ### Filtering
 
@@ -317,7 +319,7 @@ Now, you can filter addresses based on city, or users who is in that city/cities
 ```php
 Adress::filter(['city' => ['ankara', 'london']])->get();
 
-User::filter(['with' => ['city' => ['ankara', 'london']]])->get()
+User::filter(['with' => ['city' => ['ankara', 'london']]])->get();
 ```
 
 ### Groupping
