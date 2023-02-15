@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'seeders' => [],
     'modifiers' => [
         \Bakgul\LaravelQueryHelper\Modifiers\Day::class,
         \Bakgul\LaravelQueryHelper\Modifiers\EmailProvider::class,

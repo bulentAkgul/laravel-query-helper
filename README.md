@@ -1,131 +1,369 @@
+# Laravel Query Helper
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/support-ukraine.svg?t=1" />](https://supportukrainenow.org)
-
-# Build Eloquent queries from API requests
-
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-query-builder.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-query-builder)
-![Test Status](https://img.shields.io/github/actions/workflow/status/spatie/laravel-query-builder/run-tests.yml?label=tests&branch=main)
-![Code Style Status](https://img.shields.io/github/actions/workflow/status/spatie/laravel-query-builder/php-cs-fixer.yml?label=code%20style&branch=main)
-[![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-query-builder.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-query-builder)
-
-This package allows you to filter, sort and include eloquent relations based on a request. The `QueryBuilder` used in this package extends Laravel's default Eloquent builder. This means all your favorite methods and macros are still available. Query parameter names follow the [JSON API specification](http://jsonapi.org/) as closely as possible.
-
-## Basic usage
-
-### Filter a query based on a request: `/users?filter[name]=John`:
-
-```php
-use Spatie\QueryBuilder\QueryBuilder;
-
-$users = QueryBuilder::for(User::class)
-    ->allowedFilters('name')
-    ->get();
-
-// all `User`s that contain the string "John" in their name
-```
-
-[Read more about filtering features like: partial filters, exact filters, scope filters, custom filters, ignored values, default filter values, ...](https://spatie.be/docs/laravel-query-builder/v5/features/filtering/)
-
-### Including relations based on a request: `/users?include=posts`:
-
-```php
-$users = QueryBuilder::for(User::class)
-    ->allowedIncludes('posts')
-    ->get();
-
-// all `User`s with their `posts` loaded
-```
-
-[Read more about include features like: including nested relationships, including relationship count, custom includes, ...](https://spatie.be/docs/laravel-query-builder/v5/features/including-relationships/)
-
-### Sorting a query based on a request: `/users?sort=id`:
-
-```php
-$users = QueryBuilder::for(User::class)
-    ->allowedSorts('id')
-    ->get();
-
-// all `User`s sorted by ascending id
-```
-
-[Read more about sorting features like: custom sorts, sort direction, ...](https://spatie.be/docs/laravel-query-builder/v5/features/sorting/)
-
-### Works together nicely with existing queries:
-
-```php
-$query = User::where('active', true);
-
-$userQuery = QueryBuilder::for($query) // start from an existing Builder instance
-    ->withTrashed() // use your existing scopes
-    ->allowedIncludes('posts', 'permissions')
-    ->where('score', '>', 42); // chain on any of Laravel's query builder methods
-```
-
-### Selecting fields for a query: `/users?fields[users]=id,email`
-
-```php
-$users = QueryBuilder::for(User::class)
-    ->allowedFields(['id', 'email'])
-    ->get();
-
-// the fetched `User`s will only have their id & email set
-```
-
-[Read more about selecting fields.](https://spatie.be/docs/laravel-query-builder/v5/features/selecting-fields/)
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-query-builder.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-query-builder)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+This package aims to add a handy and quite flexible features to Laravel's Eloquent query builder.
 
 ## Installation
 
-You can install the package via composer:
-
-```bash
-composer require spatie/laravel-query-builder
+First, install package.
+```
+sail composer require bakgul/laravel-query-helper
 ```
 
-Read the installation notes on the docs site: [https://spatie.be/docs/laravel-query-builder/v5/installation-setup](https://spatie.be/docs/laravel-query-builder/v5/installation-setup/).
-
-## Documentation
-
-You can find the documentation on [https://spatie.be/docs/laravel-query-builder/v5](https://spatie.be/docs/laravel-query-builder/v5).
-
-Find yourself stuck using the package? Found a bug? Do you have general questions or suggestions for improving the media library? Feel free to [create an issue on GitHub](https://github.com/spatie/laravel-query-builder/issues), we'll try to address it as soon as possible.
-
-If you've found a bug regarding security please mail [security@spatie.be](mailto:security@spatie.be) instead of using the issue tracker.
-
-### Upgrading
-
-Please see [UPGRADING.md](UPGRADING.md) for details.
-
-### Testing
-
-```bash
-composer test
+Next, pulish config.
+```
+sail artisan vendor:publish --tag=query-helper
 ```
 
-### Changelog
+## Usage
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+### Filtering
 
-## Contributing
+First, you need to add `IsFilterable` trait and an array of filters to each model where you want to apply filters. That array can have two keys:
 
-Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
+- Self: the list of filters that will be applied directly to that model.
+- With: an associative array of related models that can be used to filter the main model. The keys in this array must be the same as the method names of the relations.
 
-### Security
+Let's say we have the following models and relations.
 
-If you've found a bug regarding security please mail [security@spatie.be](mailto:security@spatie.be) instead of using the issue tracker.
+```php
+class User extends ...
+{
+    use IsFilterable, ...;
 
-## Credits
+    public static $filters = [
+        'self' => [
+            \Bakgul\LaravelQueryHelper\Filters\Name::class,
+            \Bakgul\LaravelQueryHelper\Filters\Email::class,
+        ],
+        'with' => [
+            'roles' => Role::class,
+            'posts' => Post::class,
+        ]
+    ];
 
-- [Alex Vanderbist](https://github.com/AlexVanderbist)
-- [All Contributors](../../contributors)
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+}
+```
 
-## License
+```php
+class Role extends Model
+{
+    use IsFilterable;
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+    private static array $filters = [
+        'self' => [],
+        'with' => [
+            'users' => User::class,
+            'abilities' => Ability::class,
+        ],
+    ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function abilities()
+    {
+        return $this->belongsToMany(Ability::class);
+    }
+}
+```
+
+```php
+class Ability extends Model
+{
+    use IsFilterable;
+
+    private static array $filters = [
+        'self' => [
+            \Bakgul\LaravelQueryHelper\Filters\Name::class
+        ],
+        'with' => [
+            'roles' => Role::class,
+        ]
+    ];
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+}
+```
+
+```php
+$users = User::filter($request->filters)->get();
+```
+
+When you call `filter` method, it will generate a filtering array throughout the `filters` array on odels starting from `User` model recursively.
+
+To prevent infinite loop in recursion, we stop each branch when they go back to main class after adding main class to the tree. That means You can filter by the following logic:
+- Users that have cetain roles that belongs to some users.
+This example might not be seen very usefull, but it explains the capability.
+
+Since it's an expensive operation to construct the filtering array, we will cache it when it's created first time.
+
+`$request->filters` should be in a structure like the example down below. The important things here:
+- `self` filters will be passed directly.
+- `with` filters will be collected under `with` key.
+
+```php
+[
+    // *** will be replaced by % by the Text filter.
+    // ***x means the string that ends with 'x'
+    // x*** means the string that start with 'x',
+    // ***x*** means the string that contains 'x',
+    // x means the string that is 'x'
+    'name' => ['***x***', '***y'],
+    'with' => [
+        'roles' => [
+            'name' => ['editor***'],
+            'with' => [
+                'abilities' => [
+                    'name' => ['delete']
+                ]
+            ]
+        ]
+    ]
+]
+```
+
+The example up above will filter the users based on the following list:
+- its name contains 'x' or ends with 'y'
+- the name of one of its roles starts with 'editor'
+- the role can delete something.
+
+#### Polymorphic Relationship Filter
+
+Unlike other relationships, polymoprphic ones should be listed under the `self` key of `$filters` array.
+
+```php
+class Post extends Model
+{
+    use IsFilterable;
+
+    private static array $filters = [
+        'self' => [
+            \Bakgul\LaravelQueryHelper\Filters\MorphMany::class
+        ],
+        'with' => [
+            'user' => User::class,
+        ],
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->morphToMany(Comment::class, 'commentable');
+    }
+}
+```
+
+The filter in request should be like this:
+
+```php
+[
+    'morph_many' => [
+        // method name: 'to' if the relation method is 'morphToMany'
+        //              'by' if the relation method is 'morphedByMany'
+        'to',
+        // relationsip name
+        'comments',
+        // prefix:
+        //     if 'to' then this will be 'comment_id'
+        //     if 'by' then this will be 'commentable_id' and 'commentable_type' 
+        'comment',
+        // the N number of ids that will be cheched in the column up above
+        2, 3, 5
+    ]
+]
+```
+
+### Groupping
+
+Groupping operates on PHP level. If you want to group your data in the database level, you can't use this part. Otherwise, this is how to use it:
+
+- Add `IsGrouppable` trait to the model that you want to group.
+- If you want to group based on some columns all the time, add `protected static $groupKeys = ['name', 'year']` property to the model.
+- Then use it like so:
+
+```php
+/**
+ * users table has these columns:
+ *     first_name, 
+ *     last_name, 
+ *     email, 
+ *     ... some irrelevant columns
+ *     created_at
+ */
+
+$users = User::group(['first_name']);
+```
+
+`group` method is can be found in `IsGrouppable` trait as `scopeGroup` and it accepts the following arguments:
+- keys: the list of group keys
+- take: the number of items that will be in each group. Default is zero and means 'all'
+- isLast: make it true when you want to get latest records. Default is false.
+- select: the array of columns that will be selected. Default is ['*']
+ means 'all'
+- column: the name of the column when you needed. I use it for time modifiers and its default value is 'created_at' 
+
+But what if you want to group users with a column that doesn't exist. You can do that thanks to modifiers that are shipped in the package and can be be found on `src/Modifiers`.
+
+The modifiers will change the sql query to add new field on the fly. For example:
+
+```php
+$users = User::group(
+    keys: ['year', 'email_provider'],
+    take: 5,
+    isLast: true,
+    select: ['first_name', 'last_name', 'email']
+    column: 'updated_at'
+);
+```
+
+The method up above will add `year` and `email_provider` fields to the each user. `year` will be extracted from `updated_at` while `email_provider` from `email`. Each user will contain selected 3 columns and these 2.
+
+### Modifiying
+
+This is used by groupping functionality, and it's already explained, but just as a remainder, you can use this out of grouping too.
+
+- Add `IsModifyable` trait to model.
+- call `modify` method as a part of query builder.
+
+```php
+$users = User::modify(
+    keys: ['year', 'month'],
+    select: ['name', 'email'],
+    column: 'updated_at'
+)->get();
+```
+
+### Sorting
+
+It's a quite simple method that allowes you to pass all sorting columns in one method.
+
+```php
+User::sort(['name'], ['email', 'desc']);
+```
+
+## Extend Functinalities
+
+### Filtering
+
+In order to extend available filters, all you need to do is to create your own filter classes and use them in models. Let's say you have a table that contains `city` and need to apply a filter to it.
+
+First create a class. The class name must be the pascal case version of the key that you will pass in request.
+
+```php
+namespace App\Filters;
+
+class City extends Text
+{
+    public $column = 'city';
+}
+```
+
+Or you can create your own filtering logic instead of using `Text` filter.
+
+```php
+namespace App\Filters;
+
+class City extends Filter
+{
+    protected function filter(Builder $query, mixed $filter): Builder
+    {
+        // if you want to accept multiple values, call filters method
+        return $this->filters($query, $filter, $this->callback());
+
+        // otherwise...
+        return $query->where('city', $filter);
+    }
+
+    protected function callback(): callable
+    {
+        return fn ($query, $filter) => $query->where('city', $filter);
+    }
+}
+```
+
+After you create your new filter class, add it to model which can use it.
+
+```php
+class Address extends Model
+{
+    private static array $filters = [
+        'self' => [
+            \Bakgul\LaravelQueryHelper\Filters\Name::class,
+            \App\Filters\City::class,
+        ],
+        'with' => [
+            'user' => User::class,
+            'country' => Country::class,
+        ],
+    ];
+}
+```
+
+Now, you can filter addresses based on city, or users who is in that city/cities.
+
+```php
+Adress::filter(['city' => ['ankara', 'london']])->get();
+
+User::filter(['with' => ['city' => ['ankara', 'london']]])->get()
+```
+
+### Groupping
+
+If you want to use one of your current columns as they are, you don't need to take any action. Simply pass the column name in the array of group keys.
+
+But let's say you have `domain` column where you store the web sites' adresses and you want to group them beased on top-level domain (.com, .net, etc.)
+
+First you need a modifier to extract that part and store it in a new field in query.
+
+```php
+namespace App\Modifiers;
+
+class TopLevelDomain extends Modify
+{
+    public function modifyQuery(Builder $query, array $keys, string $column): Builder
+    {
+        $raw = $this->rawQuery();
+
+        return $query->when(
+            in_array('top_level_domain', $keys),
+            fn ($q) => $q->addSelect($raw)
+        );
+    }
+
+    private function rawQuery(): Expression
+    {
+        return DB::raw("REPLACE(domain, SUBSTRING_INDEX(domain, '.', 1) , '') as top_level_domain");
+    }
+}
+```
+
+Then you need to add it to `modifiers` array in `config/query-helper.php`
+
+```php
+    'modifiers' => [
+        // default ones,
+        \App\Modifiers\TopLevelDomain::class,
+    ]
+```
+
+Now you can use it like so:
+
+```php
+$customers = Customer::group(['top_level_domain']);
+```
+
+## Licance
+

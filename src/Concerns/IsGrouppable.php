@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 
 trait IsGrouppable
 {
+    use IsModifyable;
+
     public static function scopeGroup(
         Builder $query,
         array $keys = [],
@@ -22,14 +24,5 @@ trait IsGrouppable
             ->modify($keys, $select, $column)
             ->get()
             ->group($keys, $take);
-    }
-
-    public static function scopeModify(
-        Builder $query,
-        array $keys = [],
-        array $select = ['*'],
-        string $column = 'created_at'
-    ): Builder {
-        return ModificationQuery::_($query, $keys, $select, $column);
     }
 }
