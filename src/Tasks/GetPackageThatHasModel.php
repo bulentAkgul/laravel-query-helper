@@ -12,7 +12,6 @@ class GetPackageThatHasModel
 {
     public static function _(string $file): array
     {
-        dump(self::containers());
         foreach (self::containers() as $container) {
             $files = self::files("{$container}/Models", $file);
 
