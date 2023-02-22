@@ -2,10 +2,9 @@
 
 namespace Bakgul\LaravelQueryHelper\Tests\PackageTests\TaskTests;
 
-use Bakgul\LaravelHelpers\Helpers\Folder;
+use Bakgul\LaravelHelpers\Helpers\File;
 use Bakgul\LaravelQueryHelper\Tasks\GetPackageThatHasModel;
 use Bakgul\LaravelQueryHelper\Tests\TestCase;
-use Illuminate\Support\Facades\File;
 
 class GetPackageThatHasModelTaskTest extends TestCase
 {
@@ -16,7 +15,7 @@ class GetPackageThatHasModelTaskTest extends TestCase
         $package = 'dummies';
         $model = 'DummyModel';
 
-        Folder::add("{$root}/{$package}/src/Models", "{$model}.php");
+        File::create("{$root}/{$package}/src/Models", "{$model}.php");
 
         $this->assertEquals(
             ["{$root}/{$package}", $model],
@@ -32,7 +31,7 @@ class GetPackageThatHasModelTaskTest extends TestCase
         $root = base_path();
         $model = 'DummyModel';
 
-        Folder::add("{$root}/app/Models", "{$model}.php");
+        File::create("{$root}/app/Models", "{$model}.php");
 
         $this->assertEquals(
             [$root, $model],

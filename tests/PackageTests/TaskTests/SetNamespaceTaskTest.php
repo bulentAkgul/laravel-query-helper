@@ -2,18 +2,17 @@
 
 namespace Bakgul\LaravelQueryHelper\Tests\PackageTests\TaskTests;
 
-use Bakgul\LaravelHelpers\Helpers\Folder;
+use Bakgul\LaravelHelpers\Helpers\File;
 use Bakgul\LaravelHelpers\Helpers\Package;
 use Bakgul\LaravelQueryHelper\Tasks\SetNamespace;
 use Bakgul\LaravelQueryHelper\Tests\TestCase;
-use Illuminate\Support\Facades\File;
 
 class SetNamespaceTaskTest extends TestCase
 {
     /** @test */
     public function it_will_convert_path_to_namespace()
     {
-        Folder::add(
+        File::create(
             base_path('packages/core/books/src/Models'),
             'Book.php',
             'namespace DummyNamespace;'
